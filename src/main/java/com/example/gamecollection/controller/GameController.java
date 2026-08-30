@@ -8,12 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class GameController {
-
     private final GameService gameService;
-
-    public GameController(GameService gameService) {
-        this.gameService = gameService;
-    }
+    public GameController(GameService gameService) { this.gameService = gameService; }
 
     @GetMapping("/")
     public String home(@RequestParam(required = false) String search, Model model) {
@@ -22,19 +18,12 @@ public class GameController {
         model.addAttribute("totalGames", gameService.getTotalGames());
         model.addAttribute("physicalGames", gameService.getPhysicalGames());
         model.addAttribute("digitalGames", gameService.getDigitalGames());
-
         return "index";
     }
 
     @PostMapping("/add")
-    public String addGame(@ModelAttribute Game game) {
-        gameService.addGame(game);
-        return "redirect:/";
-    }
+    public String addGame(@ModelAttribute Game game) { gameService.addGame(game); return "redirect:/"; }
 
     @PostMapping("/delete/{id}")
-    public String deleteGame(@PathVariable Long id) {
-        gameService.deleteGame(id);
-        return "redirect:/";
-    }
+    public String deleteGame(@PathVariable Long id) { gameService.deleteGame(id); return "redirect:/"; }
 }
