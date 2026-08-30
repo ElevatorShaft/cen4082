@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Collection Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #222;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            flex: 1;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        }
+
+        .stat h2 {
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        input, select {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #333;
+            color: white;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .delete {
+            background: #b00020;
+        }
+
+        .delete:hover {
+            background: #d00030;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Video Game Collection Manager</h1>
+    <p>Manage your personal game collection</p>
+</header>
+
+<div class="container">
+
+    <div class="stats">
+        <div class="stat">
+            <h2 th:text="${totalGames}">0</h2>
+            <p>Total Games</p>
+        </div>
+
+        <div class="stat">
+            <h2 th:text="${physicalGames}">0</h2>
+            <p>Physical Games</p>
+        </div>
+
+        <div class="stat">
+            <h2 th:text="${digitalGames}">0</h2>
+            <p>Digital Games</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Add a Game</h2>
+
+        <form action="/add" method="post">
+            <input type="text" name="title" placeholder="Game title" required>
+
+            <select name="platform" required>
+                <option value="">Platform</option>
+                <option value="PS5">PS5</option>
+                <option value="PS4">PS4</option>
+                <option value="Xbox Series X/S">Xbox Series X/S</option>
+                <option value="Xbox One">Xbox One</option>
+                <option value="Nintendo Switch">Nintendo Switch</option>
+                <option value="PC">PC</option>
+            </select>
+
+            <select name="genre" required>
+                <option value="">Genre</option>
+                <option value="RPG">RPG</option>
+                <option value="Action">Action</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Strategy">Strategy</option>
+                <option value="Sports">Sports</option>
+                <option value="Racing">Racing</option>
+            </select>
+
+            <label>
+                <input type="checkbox" name="physical">
+                Physical Copy
+            </label>
+
+            <button type="submit">Add Game</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Search Collection</h2>
+
+        <form action="/" method="get">
+            <input
+                    type="text"
+                    name="search"
+                    th:value="${search}"
+                    placeholder="Search by title, platform, or genre">
+
+            <button type="submit">Search</button>
+            <a href="/">
+                <button type="button">Clear</button>
+            </a>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>My Games</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Platform</th>
+                <th>Genre</th>
+                <th>Format</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="game : ${games}">
+                <td th:text="${game.title}">Game</td>
+                <td th:text="${game.platform}">Platform</td>
+                <td th:text="${game.genre}">Genre</td>
+
+                <td>
+                    <span th:if="${game.physical}">Physical</span>
+                    <span th:unless="${game.physical}">Digital</span>
+                </td>
+
+                <td>
+                    <form th:action="@{/delete/{id}(id=${game.id})}" method="post">
+                        <button class="delete" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(games)}">
+                <td colspan="5">No games found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
