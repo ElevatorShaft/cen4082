@@ -35,7 +35,7 @@ public class GameService implements CommandLineRunner {
         return switch (filter) {
             case "physical" ->
                 matchingGames.stream()
-                        .filter(game -> !game.isPhysical())
+                        .filter(Game::isPhysical)
                         .toList();
             case "digital" ->
                 matchingGames.stream()
