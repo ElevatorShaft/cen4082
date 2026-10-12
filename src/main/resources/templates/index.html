@@ -181,6 +181,20 @@
                     th:value="${search}"
                     placeholder="Search by title, platform, or genre">
 
+            <select name="collectionType">
+                <option value="all"
+                        th:selected="${collectionType=='all'}">All Games
+                </option>
+
+                <option value="physical"
+                        th:selected="${collectionType=='physical'}">Physical Only
+                </option>
+
+                <option value="digital"
+                        th:selected="${collectionType=='digital'}">Digital Only
+                </option>
+            </select>
+
             <button type="submit">Search</button>
             <a href="/">
                 <button type="button">Clear</button>

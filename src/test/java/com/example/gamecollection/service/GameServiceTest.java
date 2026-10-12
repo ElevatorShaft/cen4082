@@ -77,4 +77,51 @@ class GameServiceTest {
         assertEquals(2, gameService.getPhysicalGames());
         assertEquals(1, gameService.getDigitalGames());
     }
+
+    @Test
+    void physicalFilterShouldReturnOnlyPhysicalGames() {
+        Game physical = new Game("Persona 5 Royal", "PS5", "RPG", true);
+        Game digital = new Game("Cyberpunk 2077", "PS5", "RPG", false);
+
+        when(gameRepository.findAll())
+                .thenReturn(List.of(physical, digital));
+
+        List<Game> results = gameService.searchGames("", "physical");
+
+        assertEquals(1, results.size());
+        assertEquals("Persona 5 Royal", results.get(0).getTitle());
+        assertTrue(results.get(0).isPhysical());
+    }
+
+    @Test
+    void digitalFilterShouldReturnOnlyDigitalGames() {
+        Game physical = new Game("Persona 5 Royal", "PS5", "RPG", true);
+        Game digital = new Game("Cyberpunk 2077", "PS5", "RPG", false);
+
+        when(gameRepository.findAll())
+                .thenReturn(List.of(physical, digital));
+
+        List<Game> results = gameService.searchGames("", "digital");
+
+        assertEquals(1, results.size());
+        assertEquals("Cyberpunk 2077", results.get(0).getTitle());
+        assertFalse(results.get(0).isPhysical());
+    }
+
+    @Test
+    void physicalFilterShouldWorkWithTextSearch() {
+        Game physicalPersona = new Game("Persona 5 Royal", "PS5", "RPG", true);
+        Game digitalPersona = new Game("Persona 5 Strikers", "PS5", "Action", false);
+
+        when(gameRepository
+                .findByTitleContainingIgnoreCaseOrPlatformContainingIgnoreCaseOrGenreContainingIgnoreCase(
+                        "Persona", "Persona", "Persona"))
+                .thenReturn(List.of(physicalPersona, digitalPersona));
+
+        List<Game> results = gameService.searchGames("Persona", "physical");
+
+        assertEquals(1, results.size());
+        assertEquals("Persona 5 Royal", results.get(0).getTitle());
+        assertTrue(results.get(0).isPhysical());
+    }
 }
