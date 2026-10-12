@@ -5,6 +5,7 @@ import com.example.gamecollection.repository.GameRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class GameService implements CommandLineRunner {
@@ -15,11 +16,33 @@ public class GameService implements CommandLineRunner {
     @Override
     public void run(String... args) {
     }
+	
+	public List<Game> searchGames(String search) {
+		return searchGames(search, "all");
+	}
 
-    public List<Game> searchGames(String search) {
-        if (search == null || search.trim().isEmpty()) return gameRepository.findAll();
-        String query = search.trim();
-        return gameRepository.findByTitleContainingIgnoreCaseOrPlatformContainingIgnoreCaseOrGenreContainingIgnoreCase(query, query, query);
+    public List<Game> searchGames(String search, String collectionType) {
+		List<Game> matchingGames;
+        if (search == null || search.trim().isEmpty()) 
+			matchingGames = gameRepository.findAll();
+		else {
+			String query = search.trim();
+			matchingGames = gameRepository.findByTitleContainingIgnoreCaseOrPlatformContainingIgnoreCaseOrGenreContainingIgnoreCase(query, query, query);
+		}
+
+        String filter = collectionType == null ? "all" : collectionType.trim().toLowerCase(Locale.ROOT);
+
+        return switch (filter) {
+            case "physical" ->
+                matchingGames.stream()
+                        .filter(Game::isPhysical)
+                        .toList();
+            case "digital" ->
+                matchingGames.stream()
+                        .filter(game -> !game.isPhysical())
+                        .toList();
+            default -> matchingGames;
+        };
     }
     public void addGame(Game game) { gameRepository.save(game); }
     public void deleteGame(Long id) { gameRepository.deleteById(id); }

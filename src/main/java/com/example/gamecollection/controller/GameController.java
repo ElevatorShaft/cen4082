@@ -12,9 +12,10 @@ public class GameController {
     public GameController(GameService gameService) { this.gameService = gameService; }
 
     @GetMapping("/")
-    public String home(@RequestParam(required = false) String search, Model model) {
-        model.addAttribute("games", gameService.searchGames(search));
+    public String home(@RequestParam(required = false) String search, @RequestParam(defaultValue = "all") String collectionType, Model model) {
+        model.addAttribute("games", gameService.searchGames(search, collectionType));
         model.addAttribute("search", search);
+        model.addAttribute("collectionType", collectionType);
         model.addAttribute("totalGames", gameService.getTotalGames());
         model.addAttribute("physicalGames", gameService.getPhysicalGames());
         model.addAttribute("digitalGames", gameService.getDigitalGames());
