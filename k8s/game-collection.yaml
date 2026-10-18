@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-collection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-collection
+  template:
+    metadata:
+      labels:
+        app: game-collection
+    spec:
+      containers:
+        - name: app
+          image: game-collection:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL
+              value: "jdbc:mysql://host.docker.internal:3306/game_collection?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: game-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: game-db-secret
+                  key: password
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-collection
+spec:
+  type: ClusterIP
+  selector:
+    app: game-collection
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
